@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using System.IO;
 using System;
@@ -9,8 +10,12 @@ using SeleniumExtras.WaitHelpers;
 
 namespace AddContactToContactList
 {
-    public class Tests
+    //Multibrowser support
+    [TestFixture(typeof(FirefoxDriver))]
+    [TestFixture(typeof(ChromeDriver))]
+    public class Tests<TWebDriver> where TWebDriver : IWebDriver, new()
     {
+        private IWebDriver? driver;
         [SetUp]
         public void Setup()
         {
@@ -21,7 +26,8 @@ namespace AddContactToContactList
         public void NunitSeleniumTest()
         {
             System.String path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\"));
-            WebDriver driver = new ChromeDriver(path + "\\drivers");
+            //WebDriver driver = new ChromeDriver(path + "\\drivers");
+            driver = new TWebDriver();
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
             driver.Manage().Window.Maximize();
             driver.Url = "https://thinking-tester-contact-list.herokuapp.com/";
@@ -100,7 +106,5 @@ namespace AddContactToContactList
             driver.Close();
             driver.Quit();
         }
-
-        
     }
 }
